@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Athi Kids Store</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange: #FF6B00;
+    --orange-light: #FF8C33;
+    --orange-pale: #FFF3E8;
+    --orange-dark: #CC5500;
+    --pink: #FF6B9D;
+    --yellow: #FFD700;
+    --green: #4CAF50;
+    --bg: #1E1E1E;
+    --white: #FFFFFF;
+    --gray: #f5f5f5;
+    --text-dark: #222;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #111;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  .phone-frame {
+    width: 390px;
+    height: 844px;
+    background: white;
+    border-radius: 44px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.6), inset 0 0 0 2px #333;
+  }
+
+  /* SCREENS */
+  .screen {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: none;
+    flex-direction: column;
+    scrollbar-width: none;
+  }
+  .screen::-webkit-scrollbar { display: none; }
+  .screen.active { display: flex; }
+
+  /* ---- SPLASH ---- */
+  #splash {
+    background: var(--orange);
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    cursor: pointer;
+    animation: fadeIn .5s ease;
+  }
+  #splash .bear { font-size: 120px; animation: float 2s ease-in-out infinite; }
+  #splash h1 { font-family: 'Fredoka One', cursive; font-size: 48px; color: white; letter-spacing: 2px; }
+  #splash p { font-size: 14px; color: rgba(255,255,255,0.7); font-weight: 600; letter-spacing: 4px; text-transform: uppercase; }
+  #splash .tap { margin-top: 40px; font-size: 13px; color: rgba(255,255,255,0.5); animation: pulse 1.5s ease-in-out infinite; }
+
+  /* ---- LOGIN ---- */
+  #login { background: white; }
+  .login-header {
+    background: var(--orange);
+    padding: 60px 24px 40px;
+    text-align: center;
+    border-radius: 0 0 40px 40px;
+  }
+  .login-header .bear-sm { font-size: 60px; }
+  .login-header h2 { font-family: 'Fredoka One', cursive; font-size: 28px; color: white; margin-top: 8px; }
+  .login-header p { color: rgba(255,255,255,0.8); font-size: 13px; margin-top: 4px; }
+  .login-body { padding: 32px 24px; display: flex; flex-direction: column; gap: 16px; }
+  .social-btn {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 20px; border-radius: 14px; border: 2px solid #eee;
+    font-size: 15px; font-weight: 700; cursor: pointer;
+    background: white; transition: all .2s;
+  }
+  .social-btn:hover { border-color: var(--orange); transform: translateY(-2px); }
+  .social-btn .icon { font-size: 22px; }
+  .divider { display: flex; align-items: center; gap: 12px; }
+  .divider span { font-size: 12px; color: #aaa; font-weight: 600; }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #eee; }
+  .input-field {
+    padding: 14px 18px; border-radius: 14px; border: 2px solid #eee;
+    font-size: 15px; font-family: 'Nunito', sans-serif; outline: none;
+    transition: border-color .2s;
+  }
+  .input-field:focus { border-color: var(--orange); }
+  .btn-primary {
+    padding: 16px; border-radius: 14px; border: none;
+    background: var(--orange); color: white;
+    font-size: 16px; font-weight: 800; font-family: 'Nunito', sans-serif;
+    cursor: pointer; transition: all .2s;
+  }
+  .btn-primary:hover { background: var(--orange-dark); transform: translateY(-2px); }
+  .login-footer { text-align: center; font-size: 13px; color: #aaa; }
+  .login-footer a { color: var(--orange); font-weight: 700; cursor: pointer; }
+  .terms { font-size: 11px; color: #bbb; text-align: center; padding: 0 24px 24px; }
+
+  /* ---- HOME ---- */
+  #home { background: #f9f9f9; }
+  .home-header {
+    background: var(--orange);
+    padding: 50px 20px 30px;
+    border-radius: 0 0 30px 30px;
+  }
+  .home-top { display: flex; justify-content: space-between; align-items: center; }
+  .home-top h2 { font-family: 'Fredoka One', cursive; font-size: 22px; color: white; }
+  .home-top p { font-size: 12px; color: rgba(255,255,255,0.7); }
+  .search-bar {
+    margin-top: 16px; display: flex; align-items: center; gap: 10px;
+    background: white; border-radius: 14px; padding: 12px 16px;
+  }
+  .search-bar input {
+    border: none; outline: none; font-size: 14px; flex: 1;
+    font-family: 'Nunito', sans-serif; color: #555;
+  }
+  .hero-banner {
+    margin: 20px 16px; border-radius: 20px; overflow: hidden;
+    background: linear-gradient(135deg, #FFE066 0%, var(--orange) 100%);
+    padding: 20px; display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer;
+  }
+  .hero-text h3 { font-family: 'Fredoka One', cursive; font-size: 22px; color: white; }
+  .hero-text p { font-size: 12px; color: rgba(255,255,255,0.85); margin: 4px 0 12px; }
+  .hero-text .shop-btn {
+    background: white; color: var(--orange); border: none; border-radius: 10px;
+    padding: 8px 18px; font-size: 13px; font-weight: 800; cursor: pointer;
+  }
+  .hero-img { font-size: 80px; }
+
+  .section-header { display: flex; justify-content: space-between; align-items: center; padding: 0 16px; margin-top: 20px; }
+  .section-header h3 { font-family: 'Fredoka One', cursive; font-size: 18px; color: var(--text-dark); }
+  .section-header a { font-size: 12px; color: var(--orange); font-weight: 700; cursor: pointer; }
+
+  .categories-scroll { display: flex; gap: 12px; padding: 12px 16px; overflow-x: auto; scrollbar-width: none; }
+  .categories-scroll::-webkit-scrollbar { display: none; }
+  .cat-chip {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    background: white; border-radius: 16px; padding: 12px 16px;
+    min-width: 80px; cursor: pointer; transition: all .2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 2px solid transparent;
+  }
+  .cat-chip:hover, .cat-chip.active { border-color: var(--orange); background: var(--orange-pale); }
+  .cat-chip .emoji { font-size: 28px; }
+  .cat-chip span { font-size: 11px; font-weight: 700; color: #555; }
+
+  .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px 16px 100px; }
+  .product-card {
+    background: white; border-radius: 18px; overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06); cursor: pointer; transition: all .2s;
+  }
+  .product-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
+  .product-img { background: var(--orange-pale); height: 130px; display: flex; align-items: center; justify-content: center; font-size: 60px; }
+  .product-info { padding: 10px 12px 12px; }
+  .product-info h4 { font-size: 13px; font-weight: 800; color: var(--text-dark); }
+  .product-info .price { font-family: 'Fredoka One', cursive; font-size: 16px; color: var(--orange); margin-top: 4px; }
+  .product-info .rating { font-size: 11px; color: #aaa; margin-top: 2px; }
+  .add-btn {
+    width: 100%; margin-top: 8px; padding: 8px; border-radius: 10px; border: none;
+    background: var(--orange); color: white; font-size: 12px; font-weight: 800;
+    font-family: 'Nunito', sans-serif; cursor: pointer;
+  }
+
+  /* ---- CATEGORY ---- */
+  #category { background: #f9f9f9; }
+  .cat-header {
+    background: var(--orange); padding: 50px 20px 24px;
+    border-radius: 0 0 30px 30px; display: flex; align-items: center; gap: 12px;
+  }
+  .back-btn {
+    background: rgba(255,255,255,0.2); border: none; color: white;
+    width: 36px; height: 36px; border-radius: 10px; font-size: 18px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+  .cat-header h2 { font-family: 'Fredoka One', cursive; font-size: 24px; color: white; }
+  .filter-row { display: flex; gap: 8px; padding: 16px; overflow-x: auto; scrollbar-width: none; }
+  .filter-row::-webkit-scrollbar { display: none; }
+  .filter-chip {
+    padding: 8px 16px; border-radius: 20px; border: 2px solid #eee;
+    font-size: 12px; font-weight: 700; white-space: nowrap; cursor: pointer;
+    background: white; transition: all .2s;
+  }
+  .filter-chip.active { background: var(--orange); color: white; border-color: var(--orange); }
+
+  /* ---- PRODUCT DETAIL ---- */
+  #detail { background: white; }
+  .detail-img-area {
+    background: var(--orange-pale); height: 300px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 140px; position: relative;
+  }
+  .detail-back {
+    position: absolute; top: 50px; left: 16px;
+    background: white; border: none; width: 40px; height: 40px;
+    border-radius: 12px; font-size: 20px; cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .detail-heart {
+    position: absolute; top: 50px; right: 16px;
+    background: white; border: none; width: 40px; height: 40px;
+    border-radius: 12px; font-size: 20px; cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .detail-body { padding: 24px 20px; }
+  .detail-body h2 { font-family: 'Fredoka One', cursive; font-size: 26px; color: var(--text-dark); }
+  .detail-body .detail-price { font-family: 'Fredoka One', cursive; font-size: 30px; color: var(--orange); margin: 8px 0; }
+  .detail-body .detail-rating { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #888; }
+  .detail-body p { font-size: 14px; color: #666; line-height: 1.7; margin-top: 16px; }
+  .qty-row { display: flex; align-items: center; gap: 16px; margin-top: 20px; }
+  .qty-row span { font-weight: 800; font-size: 14px; color: #555; }
+  .qty-ctrl { display: flex; align-items: center; gap: 12px; }
+  .qty-btn {
+    width: 36px; height: 36px; border-radius: 10px; border: 2px solid #eee;
+    background: white; font-size: 20px; cursor: pointer; display: flex;
+    align-items: center; justify-content: center; font-weight: 800;
+  }
+  .qty-val { font-family: 'Fredoka One', cursive; font-size: 20px; color: var(--orange); min-width: 24px; text-align: center; }
+  .detail-footer {
+    padding: 16px 20px 40px; display: flex; gap: 12px;
+    border-top: 1px solid #f0f0f0; margin-top: 20px;
+  }
+  .cart-btn {
+    flex: 1; padding: 16px; border-radius: 14px; border: 2px solid var(--orange);
+    background: white; color: var(--orange); font-size: 15px; font-weight: 800;
+    font-family: 'Nunito', sans-serif; cursor: pointer;
+  }
+  .buy-btn {
+    flex: 1; padding: 16px; border-radius: 14px; border: none;
+    background: var(--orange); color: white; font-size: 15px; font-weight: 800;
+    font-family: 'Nunito', sans-serif; cursor: pointer;
+  }
+
+  /* ---- MY CARDS ---- */
+  #cards { background: #f9f9f9; }
+  .cards-header {
+    background: var(--orange); padding: 50px 20px 24px;
+    display: flex; align-items: center; gap: 12px;
+    border-radius: 0 0 30px 30px;
+  }
+  .cards-header h2 { font-family: 'Fredoka One', cursive; font-size: 24px; color: white; }
+  .cards-scroll { display: flex; gap: 16px; padding: 20px 16px; overflow-x: auto; scrollbar-width: none; }
+  .cards-scroll::-webkit-scrollbar { display: none; }
+  .payment-card {
+    min-width: 280px; height: 160px; border-radius: 20px; padding: 20px;
+    position: relative; display: flex; flex-direction: column; justify-content: space-between;
+    cursor: pointer;
+  }
+  .payment-card.visa { background: linear-gradient(135deg, var(--pink), #FF3366); }
+  .payment-card.master { background: linear-gradient(135deg, var(--orange), var(--orange-dark)); }
+  .payment-card .card-num { font-size: 16px; font-weight: 700; color: rgba(255,255,255,0.9); letter-spacing: 2px; }
+  .payment-card .card-bottom { display: flex; justify-content: space-between; align-items: flex-end; }
+  .payment-card .card-name { font-size: 12px; color: rgba(255,255,255,0.7); }
+  .payment-card .card-brand { font-size: 28px; }
+  .view-cards-btn {
+    margin: 0 16px; padding: 16px; border-radius: 14px; border: none;
+    background: var(--orange); color: white; font-size: 16px; font-weight: 800;
+    font-family: 'Nunito', sans-serif; cursor: pointer; width: calc(100% - 32px);
+  }
+
+  /* ---- CHECKOUT ---- */
+  #checkout { background: #f9f9f9; }
+  .checkout-header {
+    background: var(--orange); padding: 50px 20px 24px;
+    display: flex; align-items: center; gap: 12px;
+    border-radius: 0 0 30px 30px;
+  }
+  .checkout-header h2 { font-family: 'Fredoka One', cursive; font-size: 24px; color: white; }
+  .checkout-body { padding: 20px 16px; display: flex; flex-direction: column; gap: 16px; }
+  .checkout-card { background: white; border-radius: 18px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+  .checkout-card h3 { font-family: 'Fredoka One', cursive; font-size: 16px; color: var(--text-dark); margin-bottom: 12px; }
+  .pay-method { display: flex; gap: 12px; }
+  .pay-opt {
+    flex: 1; padding: 12px; border-radius: 12px; border: 2px solid #eee;
+    display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer;
+    transition: all .2s;
+  }
+  .pay-opt.active { border-color: var(--orange); background: var(--orange-pale); }
+  .pay-opt .pay-icon { font-size: 24px; }
+  .pay-opt span { font-size: 11px; font-weight: 700; }
+  .coupon-row { display: flex; gap: 10px; }
+  .coupon-row input {
+    flex: 1; padding: 12px 16px; border-radius: 12px; border: 2px solid #eee;
+    font-size: 14px; font-family: 'Nunito', sans-serif; outline: none;
+  }
+  .coupon-row input:focus { border-color: var(--orange); }
+  .apply-btn {
+    padding: 12px 20px; border-radius: 12px; border: none;
+    background: var(--orange); color: white; font-size: 14px; font-weight: 800;
+    font-family: 'Nunito', sans-serif; cursor: pointer;
+  }
+  .summary-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .summary-row span:first-child { font-size: 14px; color: #888; }
+  .summary-row span:last-child { font-size: 14px; font-weight: 700; }
+  .summary-row.total span { font-family: 'Fredoka One', cursive; font-size: 18px; color: var(--orange); }
+  .summary-row.total span:first-child { color: var(--text-dark); font-family: 'Nunito', sans-serif; font-weight: 800; }
+  .confirm-btn {
+    margin: 0 16px 40px; padding: 18px; border-radius: 16px; border: none;
+    background: var(--orange); color: white; font-size: 17px; font-weight: 800;
+    font-family: 'Nunito', sans-serif; cursor: pointer; width: calc(100% - 32px);
+    transition: all .2s;
+  }
+  .confirm-btn:hover { background: var(--orange-dark); transform: translateY(-2px); }
+
+  /* ---- BOTTOM NAV ---- */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 390px; background: white; border-top: 1px solid #f0f0f0;
+    display: flex; justify-content: space-around; padding: 12px 0 24px;
+    z-index: 100;
+    border-radius: 0 0 44px 44px;
+  }
+  .nav-item {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    cursor: pointer; transition: all .2s;
+  }
+  .nav-item .nav-icon { font-size: 22px; }
+  .nav-item span { font-size: 10px; font-weight: 700; color: #bbb; }
+  .nav-item.active span { color: var(--orange); }
+  .nav-dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--orange);
+    display: none;
+  }
+  .nav-item.active .nav-dot { display: block; }
+
+  /* SUCCESS OVERLAY */
+  .success-overlay {
+    position: absolute; inset: 0; background: rgba(255,255,255,0.95);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 16px; z-index: 200; border-radius: 44px;
+    animation: fadeIn .3s ease;
+    display: none;
+  }
+  .success-overlay.show { display: flex; }
+  .success-overlay .checkmark { font-size: 80px; animation: bounce .5s ease; }
+  .success-overlay h2 { font-family: 'Fredoka One', cursive; font-size: 30px; color: var(--orange); }
+  .success-overlay p { font-size: 14px; color: #888; }
+  .success-overlay button {
+    margin-top: 16px; padding: 14px 40px; border-radius: 14px; border: none;
+    background: var(--orange); color: white; font-size: 16px; font-weight: 800;
+    font-family: 'Nunito', sans-serif; cursor: pointer;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeIn { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+  @keyframes bounce { 0% { transform: scale(0); } 60% { transform: scale(1.2); } 100% { transform: scale(1); } }
+
+  .screen { animation: fadeIn .3s ease; }
+</style>
+</head>
+<body>
+
+<div class="phone-frame">
+
+  <!-- SPLASH -->
+  <div class="screen active" id="splash" onclick="showScreen('login')">
+    <div class="bear">🐻</div>
+    <h1>athi</h1>
+    <p>Kids Store</p>
+    <div class="tap">Tap to get started</div>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="screen" id="login">
+    <div class="login-header">
+      <div class="bear-sm">🐻</div>
+      <h2>Welcome Back!</h2>
+      <p>Sign in to continue shopping</p>
+    </div>
+    <div class="login-body">
+      <button class="social-btn" onclick="showScreen('home')">
+        <span class="icon">G</span> Continue with Google
+      </button>
+      <div class="divider"><span>or</span></div>
+      <input class="input-field" type="email" placeholder="Email address">
+      <input class="input-field" type="password" placeholder="Password">
+      <button class="btn-primary" onclick="showScreen('home')">Sign In</button>
+      <div class="login-footer">Don't have an account? <a onclick="showScreen('home')">Sign Up</a></div>
+    </div>
+    <div class="terms">By continuing, you agree to our Terms and Privacy Policy.</div>
+  </div>
+
+  <!-- HOME -->
+  <div class="screen" id="home">
+    <div class="home-header">
+      <div class="home-top">
+        <div>
+          <h2>Hey there! 👋</h2>
+          <p>What are we shopping today?</p>
+        </div>
+        <span style="font-size:36px;cursor:pointer" onclick="showScreen('cards')">🛒</span>
+      </div>
+      <div class="search-bar">
+        <span>🔍</span>
+        <input placeholder="Search toys, books, games...">
+      </div>
+    </div>
+
+    <div class="hero-banner" onclick="showScreen('detail')">
+      <div class="hero-text">
+        <h3>New Arrivals!</h3>
+        <p>Dino toys & more just landed</p>
+        <button class="shop-btn">Shop Now</button>
+      </div>
+      <div class="hero-img">🦕</div>
+    </div>
+
+    <div class="section-header">
+      <h3>Categories</h3>
+      <a onclick="showScreen('category')">See all</a>
+    </div>
+    <div class="categories-scroll">
+      <div class="cat-chip active" onclick="showScreen('category')">
+        <span class="emoji">🦖</span><span>Dinos</span>
+      </div>
+      <div class="cat-chip" onclick="showScreen('category')">
+        <span class="emoji">🧸</span><span>Plush</span>
+      </div>
+      <div class="cat-chip" onclick="showScreen('category')">
+        <span class="emoji">🎮</span><span>Games</span>
+      </div>
+      <div class="cat-chip" onclick="showScreen('category')">
+        <span class="emoji">📚</span><span>Books</span>
+      </div>
+      <div class="cat-chip" onclick="showScreen('category')">
+        <span class="emoji">🎨</span><span>Art</span>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <h3>Popular Picks</h3>
+      <a>See all</a>
+    </div>
+    <div class="products-grid">
+      <div class="product-card" onclick="showScreen('detail')">
+        <div class="product-img">🦕</div>
+        <div class="product-info">
+          <h4>T-Rex Roar Set</h4>
+          <div class="price">$29.99</div>
+          <div class="rating">⭐ 4.8 (120)</div>
+          <button class="add-btn">Add to Cart</button>
+        </div>
+      </div>
+      <div class="product-card" onclick="showScreen('detail')">
+        <div class="product-img">🧸</div>
+        <div class="product-info">
+          <h4>Cuddle Bear</h4>
+          <div class="price">$19.99</div>
+          <div class="rating">⭐ 4.9 (88)</div>
+          <button class="add-btn">Add to Cart</button>
+        </div>
+      </div>
+      <div class="product-card" onclick="showScreen('detail')">
+        <div class="product-img">🚛</div>
+        <div class="product-info">
+          <h4>Big Dump Truck</h4>
+          <div class="price">$24.99</div>
+          <div class="rating">⭐ 4.7 (65)</div>
+          <button class="add-btn">Add to Cart</button>
+        </div>
+      </div>
+      <div class="product-card" onclick="showScreen('detail')">
+        <div class="product-img">🎨</div>
+        <div class="product-info">
+          <h4>Art Kit Deluxe</h4>
+          <div class="price">$34.99</div>
+          <div class="rating">⭐ 4.6 (42)</div>
+          <button class="add-btn">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CATEGORY -->
+  <div class="screen" id="category">
+    <div class="cat-header">
+      <button class="back-btn" onclick="showScreen('home')">←</button>
+      <h2>Categories</h2>
+    </div>
+    <div class="filter-row">
+      <div class="filter-chip active">All</div>
+      <div class="filter-chip">Dinos 🦖</div>
+      <div class="filter-chip">Plush 🧸</div>
+      <div class="filter-chip">Games 🎮</div>
+      <div class="filter-chip">Books 📚</div>
+    </div>
+    <div class="products-grid" style="padding-bottom:100px">
+      <div class="product-card" onclick="showScreen('detail')"><div class="product-img">🦕</div><div class="product-info"><h4>T-Rex Roar</h4><div class="price">$29.99</div><div class="rating">⭐ 4.8</div><button class="add-btn">Add to Cart</button></div></div>
+      <div class="product-card" onclick="showScreen('detail')"><div class="product-img">🧸</div><div class="product-info"><h4>Cuddle Bear</h4><div class="price">$19.99</div><div class="rating">⭐ 4.9</div><button class="add-btn">Add to Cart</button></div></div>
+      <div class="product-card" onclick="showScreen('detail')"><div class="product-img">🚛</div><div class="product-info"><h4>Dump Truck</h4><div class="price">$24.99</div><div class="rating">⭐ 4.7</div><button class="add-btn">Add to Cart</button></div></div>
+      <div class="product-card" onclick="showScreen('detail')"><div class="product-img">🎮</div><div class="product-info"><h4>Fun Board Game</h4><div class="price">$39.99</div><div class="rating">⭐ 4.5</div><button class="add-btn">Add to Cart</button></div></div>
+      <div class="product-card" onclick="showScreen('detail')"><div class="product-img">📚</div><div class="product-info"><h4>Story Book Set</h4><div class="price">$14.99</div><div class="rating">⭐ 4.9</div><button class="add-btn">Add to Cart</button></div></div>
+      <div class="product-card" onclick="showScreen('detail')"><div class="product-img">🎨</div><div class="product-info"><h4>Art Kit</h4><div class="price">$34.99</div><div class="rating">⭐ 4.6</div><button class="add-btn">Add to Cart</button></div></div>
+    </div>
+  </div>
+
+  <!-- PRODUCT DETAIL -->
+  <div class="screen" id="detail">
+    <div class="detail-img-area">
+      🦕
+      <button class="detail-back" onclick="showScreen('category')">←</button>
+      <button class="detail-heart">🤍</button>
+    </div>
+    <div class="detail-body">
+      <h2>T-Rex Roar Dino Set</h2>
+      <div class="detail-price">$29.99</div>
+      <div class="detail-rating">⭐⭐⭐⭐⭐ <span>4.8 (120 reviews)</span></div>
+      <p>A bright cartoon dino toy is shown on a plain orange background. It appears to be a large plastic T-Rex with an open mouth showing white teeth. The image has some bumps and bumps for display.</p>
+      <div class="qty-row">
+        <span>Quantity</span>
+        <div class="qty-ctrl">
+          <button class="qty-btn" onclick="changeQty(-1)">−</button>
+          <span class="qty-val" id="qty">1</span>
+          <button class="qty-btn" onclick="changeQty(1)">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="detail-footer">
+      <button class="cart-btn">🛒 Add to Cart</button>
+      <button class="buy-btn" onclick="showScreen('checkout')">Buy Now →</button>
+    </div>
+  </div>
+
+  <!-- MY CARDS -->
+  <div class="screen" id="cards">
+    <div class="cards-header">
+      <button class="back-btn" onclick="showScreen('home')">←</button>
+      <h2>My Cards</h2>
+    </div>
+    <div class="cards-scroll">
+      <div class="payment-card visa">
+        <div style="font-size:28px">📷</div>
+        <div>
+          <div class="card-num">•••• •••• •••• 4242</div>
+          <div class="card-bottom">
+            <div class="card-name">Valid 12/26</div>
+            <div class="card-brand">VISA</div>
+          </div>
+        </div>
+      </div>
+      <div class="payment-card master">
+        <div style="font-size:28px">⚙️</div>
+        <div>
+          <div class="card-num">•••• •••• •••• 8888</div>
+          <div class="card-bottom">
+            <div class="card-name">Valid 09/27</div>
+            <div class="card-brand">MC</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="view-cards-btn" onclick="showScreen('checkout')">Proceed to Checkout →</button>
+  </div>
+
+  <!-- CHECKOUT -->
+  <div class="screen" id="checkout">
+    <div class="checkout-header">
+      <button class="back-btn" onclick="showScreen('cards')">←</button>
+      <h2>Checkout</h2>
+    </div>
+    <div class="checkout-body">
+      <div class="checkout-card">
+        <h3>Payment Method</h3>
+        <div class="pay-method">
+          <div class="pay-opt active" onclick="selectPay(this)">
+            <div class="pay-icon">G</div>
+            <span>Google Pay</span>
+          </div>
+          <div class="pay-opt" onclick="selectPay(this)">
+            <div class="pay-icon">💳</div>
+            <span>VISA</span>
+          </div>
+        </div>
+      </div>
+      <div class="checkout-card">
+        <h3>Add Coupon</h3>
+        <div class="coupon-row">
+          <input placeholder="Coupon Code" id="couponInput">
+          <button class="apply-btn" onclick="applyCoupon()">Apply</button>
+        </div>
+      </div>
+      <div class="checkout-card">
+        <h3>Order Summary</h3>
+        <div class="summary-row"><span>Items (1x)</span><span>$29.99</span></div>
+        <div class="summary-row"><span>Delivery</span><span id="deliveryFee">$5.00</span></div>
+        <div class="summary-row"><span>Discount</span><span id="discount" style="color:var(--green)">-$0.00</span></div>
+        <hr style="border:none;border-top:1px dashed #eee;margin:10px 0">
+        <div class="summary-row total"><span>Total Price</span><span id="total">$34.99</span></div>
+      </div>
+    </div>
+    <button class="confirm-btn" onclick="confirmOrder()">🎉 Confirm Order</button>
+  </div>
+
+  <!-- BOTTOM NAV (shown on home/category/cards) -->
+  <div class="bottom-nav" id="bottomNav" style="display:none">
+    <div class="nav-item active" id="nav-home" onclick="showScreen('home');setNav('home')">
+      <span class="nav-icon">🏠</span>
+      <span>Home</span>
+      <div class="nav-dot"></div>
+    </div>
+    <div class="nav-item" id="nav-category" onclick="showScreen('category');setNav('category')">
+      <span class="nav-icon">🔍</span>
+      <span>Browse</span>
+      <div class="nav-dot"></div>
+    </div>
+    <div class="nav-item" id="nav-cards" onclick="showScreen('cards');setNav('cards')">
+      <span class="nav-icon">💳</span>
+      <span>My Cards</span>
+      <div class="nav-dot"></div>
+    </div>
+    <div class="nav-item" id="nav-profile">
+      <span class="nav-icon">👤</span>
+      <span>Profile</span>
+      <div class="nav-dot"></div>
+    </div>
+  </div>
+
+  <!-- SUCCESS OVERLAY -->
+  <div class="success-overlay" id="successOverlay">
+    <div class="checkmark">🎉</div>
+    <h2>Order Placed!</h2>
+    <p>Your toys are on the way! 🚚</p>
+    <p style="font-size:12px;color:#bbb">Estimated delivery: 3-5 days</p>
+    <button onclick="resetToHome()">Continue Shopping</button>
+  </div>
+
+</div>
+
+<script>
+  const screensWithNav = ['home', 'category', 'cards'];
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.getElementById('bottomNav').style.display =
+      screensWithNav.includes(id) ? 'flex' : 'none';
+    setNav(id);
+  }
+
+  function setNav(id) {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const navEl = document.getElementById('nav-' + id);
+    if (navEl) navEl.classList.add('active');
+  }
+
+  function changeQty(delta) {
+    const el = document.getElementById('qty');
+    let v = parseInt(el.textContent) + delta;
+    if (v < 1) v = 1;
+    el.textContent = v;
+  }
+
+  function selectPay(el) {
+    document.querySelectorAll('.pay-opt').forEach(o => o.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function applyCoupon() {
+    const val = document.getElementById('couponInput').value.trim().toLowerCase();
+    if (val === 'save10') {
+      document.getElementById('discount').textContent = '-$3.00';
+      document.getElementById('total').textContent = '$31.99';
+    } else if (val) {
+      alert('Invalid coupon code. Try "SAVE10"!');
+    }
+  }
+
+  function confirmOrder() {
+    document.getElementById('successOverlay').classList.add('show');
+  }
+
+  function resetToHome() {
+    document.getElementById('successOverlay').classList.remove('show');
+    showScreen('home');
+  }
+</script>
+</body>
+</html>
