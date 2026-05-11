@@ -29,7 +29,7 @@
 
 - **Author**: Malathi Durai
 - **GitHub**: [@malathidurai06](https://github.com/malathidurai06)
-- **Email**: [your-email@example.com](#)
+- **Email**: [malathidurai2005@gmail.com]
 
 ---
 
